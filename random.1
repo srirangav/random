@@ -1,0 +1,29 @@
+.TH random 1 
+.SH NAME
+random - a simple utility for generating a random integer
+.SH SYNOPSIS
+random 
+
+random [num]
+
+random [num1] [num2]
+.SH DESCRIPTION
+random is a simple utility for generating a random integer.
+
+When run without any arguments, random returns a random integer between
+0 and INTMAX_MAX.
+
+If random is provided a single argument and that argument is a positive
+integer random retruns a random integer between 0 and the specified
+integer.  If the single argument is a negative integer, random returns a
+random integer between the specified integer and INTMAX_MAX.
+
+If random is provide two or more arguments, random will return a random
+integer in the range between the first two arguments.
+
+.SH SEE ALSO
+arc4random(3); strtoimax(3)
+.SH PLATFORMS
+random has been tested on MacOS X.
+.SH HISTORY
+random was written by Sriranga Veeraraghavan <sriranga@berkeley.edu>.
