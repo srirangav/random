@@ -1,7 +1,7 @@
 README
 ------
 
-random v0.2.1
+random v0.2.2
 By Sriranga Veeraraghavan <sriranga@berkeley.edu>
 
 random is a simple command line program for generating random integers.
@@ -20,6 +20,7 @@ integer in the range between the first two arguments.
 
 History:
 
+v0.2.2 - use arc4random_uniform(3) instead of arc4random with %
 v0.2.1 - update gcc flags
 v0.2.0 - initial GitHub release
 

@@ -1,7 +1,7 @@
 /*
-     random.c - a random number generator based on arc4random()
+     random.c - a command line random number generator based on arc4random()
 
-     Copyright (c) 2011-2017 Sriranga Veeraraghavan <ranga@calalum.org>
+     Copyright (c) 2011-2017, 2020 Sriranga Veeraraghavan <sriranga@berkeley.edu>
 
      Permission is hereby granted, free of charge, to any person
      obtaining a copy of this software and associated documentation
@@ -144,9 +144,18 @@ main (int argc, char **argv)
         max = val;
     }
 
-    val = (arc4random() % (max - min + 1)) + min;
+    /* keep max under INTMAX */
+
+    if (max == INTMAX_MAX) {
+	max--;
+    }
+
+    /* use arc4random_uniform(3) instead of % to avoid modulo bias */
+	
+    val = arc4random_uniform(max - min + 1) + min;
 
     fprintf(stdout,"%ji\n", val);
 
     exit(0);
 }
+
