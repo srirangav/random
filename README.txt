@@ -1,11 +1,11 @@
 README
 ------
 
-random v0.2.3
+random v0.2.4
 By Sriranga Veeraraghavan <ranga@calalum.org>
 
 random is a simple command line program for generating random integer.
-random relies on arc4random(3).
+random relies on arc4random(3), if available, or random(3).
 
 Usage:
 
@@ -13,17 +13,17 @@ Usage:
     random [num]
     random [num1] [num2]
 
-    When run without any arguments, random prints out a random integer between
-    0 and ULONG_MAX.
+    When run without any arguments, random prints out a random integer 
+    between 0 and ULONG_MAX.
 
-    When a single argument is provided, if that argument is a valid positive
-    integer below ULONG_MAX, random prints out a random integer between 0 and
-    the specified integer.  If the argument is 0, random prints out a random
-    integer between 0 and ULONG_MAX.
+    When a single argument is provided, if that argument is a valid 
+    positive integer below ULONG_MAX, random prints out a random integer 
+    between 0 and the specified integer.  If the argument is 0, random 
+    prints out a random integer between 0 and ULONG_MAX.
 
-    If two or more arguments are provided, and the first two arguments are valid
-    positive integers below ULONG_MAX, random prints out a random integer between
-    the first two arguments.
+    If two or more arguments are provided, and the first two arguments 
+    are valid positive integers below ULONG_MAX, random prints out a 
+    random integer between the first two arguments.
 
 History:
 
@@ -37,3 +37,4 @@ History:
 License:
 
     See LICENSE.txt
+
