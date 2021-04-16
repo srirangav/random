@@ -1,7 +1,7 @@
 /*
      random.c - a command line random number generator based on arc4random()
 
-     Copyright (c) 2011-2017, 2020 Sriranga Veeraraghavan <sriranga@berkeley.edu>
+     Copyright (c) 2011-2017, 2020-2021 Sriranga Veeraraghavan <ranga@calalum.org>
 
      Permission is hereby granted, free of charge, to any person
      obtaining a copy of this software and associated documentation
@@ -29,41 +29,27 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-#include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
 #include <limits.h>
 #include <stdarg.h>
 
+/* constants */
+
+static const char *gRandomStrErrNotPos = "Not a valid positive integer";
+static const char *gRandomStrErrSame   = "Both integers are the same";
+
 /* prototypes */
 
-static int get_int (char *str, intmax_t *num);
-static int print_error (const char *fmt, ...);
-static void print_usage (char *cmd);
+static void printUsage(char *cmd);
+static int  getLong(char *str, unsigned long *num);
 
 /* functions */
-
-/* print_error - prints a formatted error message */
-
-static int
-print_error (const char *fmt, ...)
-{
-    int rc;
-    va_list ap;
-    
-    if ((rc = fprintf(stderr, "ERROR: ")) > 0) {
-        va_start(ap, fmt);
-        rc = vfprintf(stderr, fmt, ap);
-        va_end(ap);
-    }
-    
-    return rc;
-}
 
 /* print_usage - prints the usage message */
 
 static void
-print_usage (char *cmd)
+printUsage (char *cmd)
 {
     fprintf(stderr, "Usage: %s\n", cmd);
     fprintf(stderr, "       %s [num]\n", cmd);
@@ -73,7 +59,7 @@ print_usage (char *cmd)
 /* get_int - get an int from the specified string */
 
 static int
-get_int (char *str, intmax_t *num)
+getLong (char *str, unsigned long *num)
 {
     char *ep;
     
@@ -81,11 +67,11 @@ get_int (char *str, intmax_t *num)
         return 0;
     }
     
-    *num = (intmax_t) strtoimax(str, &ep, 0);
+    *num = (unsigned long) strtoul(str, &ep, 0);
     
     if ((errno == EINVAL && *num == 0) ||
         !(str[0] != '\0' && *ep == '\0') ||
-        (errno == ERANGE && *num == INTMAX_MAX)) {
+        errno == ERANGE) {
         return 0;
     }
 
@@ -97,19 +83,19 @@ get_int (char *str, intmax_t *num)
 int
 main (int argc, char **argv)
 {
-    intmax_t val = 0, min = 0, max = INTMAX_MAX;
+    unsigned long val = 0, min = 0, max = ULONG_MAX;
     
     if (argc == 2) {
 
         /* only one argument */
 
-        if (!get_int(argv[1],&val)) {
-            print_error("Not a valid number: '%s'\n", argv[1]);
-            print_usage(argv[0]);
+        if (argv[1] == NULL || argv[1][0] == '-' || !getLong(argv[1], &val)) {
+            fprintf(stderr, "Error: %s: '%s'\n", gRandomStrErrNotPos, argv[1]);
+            printUsage(argv[0]);
             exit(1);
         }
 
-        /* if the number is less than 0, treat it as the min value,
+        /* if the number is less than or equal to 0, treat it as the min value,
            otherwise treat it as the max value */
         
         if (val <= 0) {
@@ -122,18 +108,23 @@ main (int argc, char **argv)
 
         /* at least two arguments - treat it as a range */
 
-        if (!get_int(argv[1],&min)) {
-            print_error("Not a valid number: '%s'\n", argv[1]);
-            print_usage(argv[0]);
+        if (argv[1] == NULL || argv[1][0] == '-' || !getLong(argv[1], &min)) {
+            fprintf(stderr, "Error: %s: '%s'\n", gRandomStrErrNotPos, argv[1]);
+            printUsage(argv[0]);
             exit(1);
         }
 
-        if (!get_int(argv[2],&max)) {
-            print_error("Not a valid number: '%s'\n", argv[2]);
-            print_usage(argv[0]);
+        if (argv[2] == NULL || argv[2][0] == '-' || !getLong(argv[2], &max)) {
+            fprintf(stderr, "Error: %s: '%s'\n", gRandomStrErrNotPos, argv[2]);
+            printUsage(argv[0]);
             exit(1);
         }
         
+        if (min == max) {
+            fprintf(stderr, "Error: %s: '%s'\n", gRandomStrErrSame, argv[1]);
+            exit(1);
+        }
+
     }
 
     /* swap min & max if min is greater than max */
@@ -144,17 +135,17 @@ main (int argc, char **argv)
         max = val;
     }
 
-    /* keep max under INTMAX */
+    /* keep max under ULONG_MAX */
 
-    if (max == INTMAX_MAX) {
-	max--;
+    if (max == ULONG_MAX) {
+        max--;
     }
-
+    
     /* use arc4random_uniform(3) instead of % to avoid modulo bias */
-	
-    val = arc4random_uniform(max - min + 1) + min;
+    
+    val = arc4random_uniform((uint32_t)(max - min + 1)) + min;
 
-    fprintf(stdout,"%ji\n", val);
+    fprintf(stdout, "%lu\n", val);
 
     exit(0);
 }
