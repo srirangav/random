@@ -34,6 +34,10 @@
 #include <unistd.h>
 #include <limits.h>
 #include <stdarg.h>
+#ifdef __linux__
+#include <time.h>
+#include <sys/time.h>
+#endif /* __linux__ */
 
 /* constants */
 
@@ -97,12 +101,32 @@ static u_int32_t
 uniform_arc4random(u_int32_t upper_bound)
 {
     u_int32_t r, min;
+#ifdef __linux__
+    struct timeval t1;
+#endif
 
     if (upper_bound < 2)
         return 0;
 
     /* 2**32 % x == (2**32 - x) % x */
     min = -upper_bound % upper_bound;
+
+#ifdef __linux__
+    /* 
+       Hack to get slightly better random numbers on Linux, where
+       arc4random() isn't always available.
+       See: http://www.guyrutenberg.com/2007/09/03/seeding-srand/
+     */
+ 
+    if (gettimeofday(&t1, NULL) == 0) 
+    {
+        srandom((unsigned int)(t1.tv_usec * t1.tv_sec));
+    }
+    else 
+    {
+        srandom((unsigned int)time(NULL));
+    }
+#endif /* __linux__ */
 
     /*
      * This could theoretically loop forever but each retry has
@@ -111,7 +135,11 @@ uniform_arc4random(u_int32_t upper_bound)
      * to re-roll.
      */
     for (;;) {
+#ifndef __linux__
         r = arc4random();
+#else
+	r = (u_int32_t)random();
+#endif /* __linux__ */
         if (r >= min)
             break;
     }
@@ -210,3 +238,4 @@ main (int argc, char **argv)
 
     exit(0);
 }
+
