@@ -35,6 +35,7 @@
 #include <limits.h>
 #include <stdarg.h>
 #ifdef __linux__
+#include <sys/types.h>
 #include <time.h>
 #include <sys/time.h>
 #endif /* __linux__ */
@@ -116,15 +117,16 @@ uniform_arc4random(u_int32_t upper_bound)
        Hack to get slightly better random numbers on Linux, where
        arc4random() isn't always available.
        See: http://www.guyrutenberg.com/2007/09/03/seeding-srand/
+            https://groups.google.com/g/linux.debian.devel/c/NvcnmxmLDts
      */
  
     if (gettimeofday(&t1, NULL) == 0) 
     {
-        srandom((unsigned int)(t1.tv_usec * t1.tv_sec));
+        srandom((unsigned int)((t1.tv_usec * t1.tv_sec)^getpid()));
     }
     else 
     {
-        srandom((unsigned int)time(NULL));
+        srandom((unsigned int)(time(NULL)^getpid()));
     }
 #endif /* __linux__ */
 
