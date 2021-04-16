@@ -1,7 +1,8 @@
 /*
      random.c - a command line random number generator based on arc4random()
 
-     Copyright (c) 2011-2017, 2020-2021 Sriranga Veeraraghavan <ranga@calalum.org>
+     Portions Copyright (c) 2011-2017, 2020-2021 Sriranga Veeraraghavan
+     <ranga@calalum.org>. All rights reserved.
 
      Permission is hereby granted, free of charge, to any person
      obtaining a copy of this software and associated documentation
@@ -43,6 +44,7 @@ static const char *gRandomStrErrSame   = "Both integers are the same";
 
 static void printUsage(char *cmd);
 static int  getLong(char *str, unsigned long *num);
+static u_int32_t uniform_arc4random(u_int32_t upper_bound);
 
 /* functions */
 
@@ -62,13 +64,13 @@ static int
 getLong (char *str, unsigned long *num)
 {
     char *ep;
-    
+
     if (str == NULL || num == NULL) {
         return 0;
     }
-    
+
     *num = (unsigned long) strtoul(str, &ep, 0);
-    
+
     if ((errno == EINVAL && *num == 0) ||
         !(str[0] != '\0' && *ep == '\0') ||
         errno == ERANGE) {
@@ -78,50 +80,111 @@ getLong (char *str, unsigned long *num)
     return 1;
 }
 
+/*
+ * uniform_arc4random - calculate a uniformly distributed random number
+ *                      less than upper_bound avoiding "modulo bias"
+ *
+ * Uniformity is achieved by generating new random numbers until the one
+ * returned is outside the range [0, 2**32 % upper_bound).  This
+ * guarantees the selected random number will be inside
+ * [2**32 % upper_bound, 2**32) which maps back to [0, upper_bound)
+ * after reduction modulo upper_bound.
+ *
+ * From: https://github.com/openssh/openssh-portable/blob/master/openbsd-compat/arc4random.c
+ */
+
+static u_int32_t
+uniform_arc4random(u_int32_t upper_bound)
+{
+    u_int32_t r, min;
+
+    if (upper_bound < 2)
+        return 0;
+
+    /* 2**32 % x == (2**32 - x) % x */
+    min = -upper_bound % upper_bound;
+
+    /*
+     * This could theoretically loop forever but each retry has
+     * p > 0.5 (worst case, usually far better) of selecting a
+     * number inside the range we need, so it should rarely need
+     * to re-roll.
+     */
+    for (;;) {
+        r = arc4random();
+        if (r >= min)
+            break;
+    }
+
+    return r % upper_bound;
+}
+
 /* main */
 
 int
 main (int argc, char **argv)
 {
     unsigned long val = 0, min = 0, max = ULONG_MAX;
-    
+
     if (argc == 2) {
 
         /* only one argument */
 
-        if (argv[1] == NULL || argv[1][0] == '-' || !getLong(argv[1], &val)) {
-            fprintf(stderr, "Error: %s: '%s'\n", gRandomStrErrNotPos, argv[1]);
+        if (argv[1] == NULL ||
+            argv[1][0] == '-' ||
+            !getLong(argv[1], &val))
+        {
+            fprintf(stderr,
+                    "Error: %s: '%s'\n",
+                    gRandomStrErrNotPos,
+                    argv[1]);
             printUsage(argv[0]);
             exit(1);
         }
 
-        /* if the number is less than or equal to 0, treat it as the min value,
-           otherwise treat it as the max value */
-        
+        /* if the number is less than or equal to 0, treat it
+           as the min value, otherwise treat it as the max value */
+
         if (val <= 0) {
             min = val;
         } else {
             max = val;
         }
-        
+
     } else if (argc >= 3) {
 
         /* at least two arguments - treat it as a range */
 
-        if (argv[1] == NULL || argv[1][0] == '-' || !getLong(argv[1], &min)) {
-            fprintf(stderr, "Error: %s: '%s'\n", gRandomStrErrNotPos, argv[1]);
+        if (argv[1] == NULL ||
+            argv[1][0] == '-' ||
+            !getLong(argv[1], &min))
+        {
+            fprintf(stderr,
+                    "Error: %s: '%s'\n",
+                    gRandomStrErrNotPos,
+                    argv[1]);
             printUsage(argv[0]);
             exit(1);
         }
 
-        if (argv[2] == NULL || argv[2][0] == '-' || !getLong(argv[2], &max)) {
-            fprintf(stderr, "Error: %s: '%s'\n", gRandomStrErrNotPos, argv[2]);
+        if (argv[2] == NULL ||
+            argv[2][0] == '-' ||
+            !getLong(argv[2], &max))
+        {
+            fprintf(stderr,
+                    "Error: %s: '%s'\n",
+                    gRandomStrErrNotPos,
+                    argv[2]);
             printUsage(argv[0]);
             exit(1);
         }
-        
-        if (min == max) {
-            fprintf(stderr, "Error: %s: '%s'\n", gRandomStrErrSame, argv[1]);
+
+        if (min == max)
+        {
+            fprintf(stderr,
+                    "Error: %s: '%s'\n",
+                    gRandomStrErrSame,
+                    argv[1]);
             exit(1);
         }
 
@@ -140,13 +203,10 @@ main (int argc, char **argv)
     if (max == ULONG_MAX) {
         max--;
     }
-    
-    /* use arc4random_uniform(3) instead of % to avoid modulo bias */
-    
-    val = arc4random_uniform((uint32_t)(max - min + 1)) + min;
+
+    val = uniform_arc4random((u_int32_t)(max - min + 1)) + min;
 
     fprintf(stdout, "%lu\n", val);
 
     exit(0);
 }
-

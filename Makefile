@@ -3,33 +3,45 @@
 PGM_SRCS = random.c
 PGM_OBJS = $(PGM_SRCS:.c=.o)
 PGM = random
-PGM_REL = 0.2.3
+PGM_REL = 0.2.4
 PGM_FILES = $(PGM_SRCS) $(PGM).1 Makefile README.txt LICENSE.txt
 
 CC = cc
 UNAME = /usr/bin/uname
+GREP = /usr/bin/grep
+SWVERS = /usr/bin/sw_vers
 
 # CFLAGS, based on:
 # https://developers.redhat.com/blog/2018/03/21/compiler-and-linker-flags-gcc/
 # https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html
 # https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 
-CFLAGS       =  -O2 -W -Wall -Wextra -Wshadow -Wcast-qual -Wmissing-declarations \
-                -Wmissing-prototypes -Wconversion -Wcast-align -Wunused \
-                -Wshadow -Wold-style-cast -Wpointer-arith -Wno-missing-braces \
-                -Wformat-nonliteral -Wformat-security -Wformat-y2k \
-                -Werror -Werror=implicit-function-declaration \
-                -pedantic -pedantic-errors \
-                -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS \
-                -fasynchronous-unwind-tables -fpic \
-                -fstack-protector-all -fstack-protector-strong -fwrapv
-CFLAGS_x86_64 = -fcf-protection
+CFLAGS =  -O2 -W -Wall -Wextra -Wshadow -Wcast-qual -Wmissing-declarations \
+          -Wmissing-prototypes -Wconversion -Wcast-align -Wunused \
+          -Wshadow -Wpointer-arith -Wno-missing-braces \
+          -Wformat-nonliteral -Wformat-security -Wformat-y2k \
+          -Werror -Werror=implicit-function-declaration \
+          -pedantic -pedantic-errors \
+          -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS \
+          -fasynchronous-unwind-tables -fpic \
+          -fstack-protector-all -fwrapv
+CFLAGS_CLANG = -fstack-protector-strong -Wold-style-cast
+CFLAGS_CLANG_x86_64 = -fcf-protection
 
 .c.o:
 	MACH_TYPE="`$(UNAME) -m`" && \
+    CLANG="NO" && \
+    if $(CC) -v 2>&1 | $(GREP) -i clang 2>&1 > /dev/null ; then \
+       CLANG="YES" ; \
+    fi && \
     case x"$$MACH_TYPE" in \
         x"amd64"|x"x86_64") \
-            $(CC) $(CFLAGS) $(CFLAGS_x86_64) -c $< ;; \
+            if [ X"$$CLANG" == X"YES" ] ; then \
+               $(CC) $(CFLAGS) \
+                     $(CFLAGS_CLANG) $(CFLAGS_CLANG_x86_64) -c $< ; \
+            else \
+               $(CC) $(CFLAGS) $(CFLAGS_x86_64) -c $< ; \
+            fi ;; \
         *)  $(CC) $(CFLAGS) -c $< ;; \
     esac
 
@@ -37,9 +49,19 @@ all: $(PGM)
 
 $(PGM): $(PGM_OBJS)
 	MACH_TYPE="`$(UNAME) -m`" && \
+    CLANG="NO" && \
+    if $(CC) -v 2>&1 | $(GREP) -i clang 2>&1 > /dev/null ; then \
+       CLANG="YES" ; \
+    fi && \
     case x"$$MACH_TYPE" in \
         x"amd64"|x"x86_64") \
-            $(CC) $(CFLAGS) $(CFLAGS_x86_64) -o $(PGM) $(PGM_OBJS) ;; \
+            if [ X"$$CLANG" == X"YES" ] ; then \
+               $(CC) $(CFLAGS) \
+                     $(CFLAGS_CLANG) $(CFLAGS_CLANG_x86_64) \
+                     -o $(PGM) $(PGM_OBJS) ; \
+            else \
+               $(CC) $(CFLAGS) $(CFLAGS_x86_64) -o $(PGM) $(PGM_OBJS) ; \
+            fi ;; \
         *)  $(CC) $(CFLAGS) -o $(PGM) $(PGM_OBJS) ;; \
     esac
 
