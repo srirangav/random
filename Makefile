@@ -36,7 +36,7 @@ CFLAGS_CLANG_x86_64 = -fcf-protection
     fi && \
     case x"$$MACH_TYPE" in \
         x"amd64"|x"x86_64") \
-            if [ X"$$CLANG" == X"YES" ] ; then \
+            if [ X"$$CLANG" = X"YES" ] ; then \
                $(CC) $(CFLAGS) \
                      $(CFLAGS_CLANG) $(CFLAGS_CLANG_x86_64) -c $< ; \
             else \
@@ -55,7 +55,7 @@ $(PGM): $(PGM_OBJS)
     fi && \
     case x"$$MACH_TYPE" in \
         x"amd64"|x"x86_64") \
-            if [ X"$$CLANG" == X"YES" ] ; then \
+            if [ X"$$CLANG" = X"YES" ] ; then \
                $(CC) $(CFLAGS) \
                      $(CFLAGS_CLANG) $(CFLAGS_CLANG_x86_64) \
                      -o $(PGM) $(PGM_OBJS) ; \
