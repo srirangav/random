@@ -29,7 +29,7 @@ History:
 
     v0.2.4 - use OpenSSH portable arc4random_uniform to support older
              MacOSX versions (10.6 and earlier); add support for Linux
-             (Debian 10)
+             (Debian 10, Ubuntu 20.10)
     v0.2.3 - changes to build with additional warnings on Apple M1
     v0.2.2 - use arc4random_uniform(3) instead of arc4random with %
     v0.2.1 - update gcc flags
