@@ -1,11 +1,14 @@
 # Makefile for random
 
+PREFIX = /usr/local
 PGM_SRCS = random.c
 PGM_OBJS = $(PGM_SRCS:.c=.o)
 PGM = random
-PGM_REL = 0.2.4
-PGM_FILES = $(PGM_SRCS) $(PGM).1 Makefile README.txt LICENSE.txt
-
+PGM_REL = 0.2.5
+PGM_MAN = $(PGM).1
+PGM_BINDIR = $(DESTDIR)$(PREFIX)/bin
+PGM_MANDIR = $(DESTDIR)$(PREFIX)/man/man1
+PGM_FILES = $(PGM_SRCS) $(PGM_MAN) Makefile README.txt LICENSE.txt
 CC = cc
 UNAME = /usr/bin/uname
 GREP = /usr/bin/grep
@@ -15,18 +18,29 @@ SWVERS = /usr/bin/sw_vers
 # https://developers.redhat.com/blog/2018/03/21/compiler-and-linker-flags-gcc/
 # https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html
 # https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
+# https://airbus-seclab.github.io/c-compiler-security/clang_compilation.html
 
-CFLAGS =  -O2 -W -Wall -Wextra -Wshadow -Wcast-qual -Wmissing-declarations \
-          -Wmissing-prototypes -Wconversion -Wcast-align -Wunused \
-          -Wshadow -Wpointer-arith -Wno-missing-braces \
-          -Wformat-nonliteral -Wformat-security -Wformat-y2k \
-          -Werror -Werror=implicit-function-declaration \
-          -pedantic -pedantic-errors \
-          -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS \
-          -fasynchronous-unwind-tables -fpic \
-          -fstack-protector-all -fwrapv
+CFLAGS = -O2 -W -Wall -Wextra -Wpedantic -Werror -Walloca \
+         -Wconversion -Wformat=2 -Wformat-security \
+         -Wnull-dereference -Wstack-protector -Wstrict-overflow=3 \
+         -Wvla -Warray-bounds-pointer-arithmetic \
+         -Wimplicit-fallthrough -Wconditional-uninitialized \
+         -Wloop-analysis -Wshift-sign-overflow -Wswitch-enum \
+         -Wtautological-constant-in-range-compare \
+         -Wassign-enum -Wbad-function-cast -Wfloat-equal \
+         -Wformat-type-confusion -Wpointer-arith \
+         -Widiomatic-parentheses -Wunreachable-code-aggressive \
+         -Wmissing-declarations -Wshadow -Wmissing-prototypes \
+         -Wcast-align -Wunused -Wpointer-arith -Wno-missing-braces \
+         -Wformat-nonliteral -Wformat-y2k \
+         -Werror=implicit-function-declaration \
+         -pedantic -pedantic-errors \
+         -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS \
+         -fasynchronous-unwind-tables -fpic -fPIE \
+         -fstack-protector-all -fno-sanitize-recover -fwrapv
 CFLAGS_CLANG = -fstack-protector-strong -Wold-style-cast
-CFLAGS_CLANG_x86_64 = -fcf-protection
+CFLAGS_CLANG_x86_64 = -fcf-protection=full -fsanitize=memory \
+                      -fsanitize=cfi -fsanitize=safe-stack
 
 .c.o:
 	MACH_TYPE="`$(UNAME) -m`" && \
@@ -79,11 +93,15 @@ tgz: clean
 $(PGM).1.txt:
 	nroff -man $(PGM).1 | col -b > $(PGM).1.txt
 
-install:
-	@echo "Please do the following:"
-	@echo
-	@echo "mkdir -p ~/bin ~/man/man1"
-	@echo "cp $(PGM) ~/bin"
-	@echo "cp $(PGM).1 ~/man/man1"
-	@echo
-	@echo "Add ~/bin to PATH and ~/man to MANPATH"
+# install and uninstall rules
+# from: http://nuclear.mutantstargoat.com/articles/make/#writing-install-uninstall-rules
+
+.PHONY: install
+install: $(PGM)
+	mkdir -p $(PGM_BINDIR) $(PGM_MANDIR)
+	cp $(PGM) $(PGM_BINDIR)/$(PGM)
+	cp $(PGM_MAN) $(PGM_MANDIR)/$(PGM_MAN)
+
+.PHONY: uninstall
+uninstall:
+	rm $(PGM_BINDIR)/$(PGM) $(PGM_MANDIR)/$(PGM_MAN)

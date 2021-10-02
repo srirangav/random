@@ -45,10 +45,16 @@
 static const char *gRandomStrErrNotPos = "Not a valid positive integer";
 static const char *gRandomStrErrSame   = "Both integers are the same";
 
+/* uncomment this to remove commas from supplied numbers */
+
+/*
+#define REMOVE_COMMAS
+*/
+
 /* prototypes */
 
 static void printUsage(char *cmd);
-static int  getLong(char *str, unsigned long *num);
+static int getLong(char *str, unsigned long *num);
 static u_int32_t uniform_arc4random(u_int32_t upper_bound);
 
 /* functions */
@@ -63,21 +69,52 @@ printUsage (char *cmd)
     fprintf(stderr, "       %s [num1] [num2]\n", cmd);
 }
 
-/* get_int - get an int from the specified string */
+/* getLong - get a long from the specified string */
 
 static int
 getLong (char *str, unsigned long *num)
 {
-    char *ep;
+    char *ep, *w;
+#ifdef REMOVE_COMMAS
+    size_t str_len, i, j;
+#endif /* REMOVE_COMMANS */
 
     if (str == NULL || num == NULL) {
         return 0;
     }
 
-    *num = (unsigned long) strtoul(str, &ep, 0);
+#ifdef REMOVE_COMMAS
+    /* remove commas from the specified string */
+    
+    str_len = strlen(str);    
+    w = (char *)malloc((str_len + 1)*sizeof(char));
+    if (w != NULL)
+    {    
+        memset(w, '\0', str_len);
+    
+        for (i = 0, j = 0; i < str_len; i++)
+        {
+            if (str[i] != ',')
+            {
+                w[j] = str[i];
+                j++;
+            }
+        }
+        
+        free(w);
+    }
+    else
+    {
+#endif /* REMOVE_COMMAS */
+        w = str;
+#ifdef REMOVE_COMMAS
+    }
+#endif /* REMOVE_COMMAS */
+
+    *num = (unsigned long) strtoul(w, &ep, 0);
 
     if ((errno == EINVAL && *num == 0) ||
-        !(str[0] != '\0' && *ep == '\0') ||
+        !(w[0] != '\0' && *ep == '\0') ||
         errno == ERANGE) {
         return 0;
     }
