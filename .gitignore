@@ -1,5 +1,6 @@
 # Xcode
 Makefile
+platform.mk
 .DS_Store
 build/
 *.pbxuser

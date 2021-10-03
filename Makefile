@@ -10,75 +10,20 @@ PGM_BINDIR = $(DESTDIR)$(PREFIX)/bin
 PGM_MANDIR = $(DESTDIR)$(PREFIX)/man/man1
 PGM_FILES = $(PGM_SRCS) $(PGM_MAN) Makefile README.txt LICENSE.txt
 CC = cc
-UNAME = /usr/bin/uname
-GREP = /usr/bin/grep
-SWVERS = /usr/bin/sw_vers
 
-# CFLAGS, based on:
-# https://developers.redhat.com/blog/2018/03/21/compiler-and-linker-flags-gcc/
-# https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html
-# https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
-# https://airbus-seclab.github.io/c-compiler-security/clang_compilation.html
-
-CFLAGS = -O2 -W -Wall -Wextra -Wpedantic -Werror -Walloca \
-         -Wconversion -Wformat=2 -Wformat-security \
-         -Wnull-dereference -Wstack-protector -Wstrict-overflow=3 \
-         -Wvla -Warray-bounds-pointer-arithmetic \
-         -Wimplicit-fallthrough -Wconditional-uninitialized \
-         -Wloop-analysis -Wshift-sign-overflow -Wswitch-enum \
-         -Wtautological-constant-in-range-compare \
-         -Wassign-enum -Wbad-function-cast -Wfloat-equal \
-         -Wformat-type-confusion -Wpointer-arith \
-         -Widiomatic-parentheses -Wunreachable-code-aggressive \
-         -Wmissing-declarations -Wshadow -Wmissing-prototypes \
-         -Wcast-align -Wunused -Wpointer-arith -Wno-missing-braces \
-         -Wformat-nonliteral -Wformat-y2k \
-         -Werror=implicit-function-declaration \
-         -pedantic -pedantic-errors \
-         -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS \
-         -fasynchronous-unwind-tables -fpic -fPIE \
-         -fstack-protector-all -fno-sanitize-recover -fwrapv
-CFLAGS_CLANG = -fstack-protector-strong -Wold-style-cast
-CFLAGS_CLANG_x86_64 = -fcf-protection=full -fsanitize=memory \
-                      -fsanitize=cfi -fsanitize=safe-stack
+include platform.mk
 
 .c.o:
-	MACH_TYPE="`$(UNAME) -m`" && \
-    CLANG="NO" && \
-    if $(CC) -v 2>&1 | $(GREP) -i clang 2>&1 > /dev/null ; then \
-       CLANG="YES" ; \
-    fi && \
-    case x"$$MACH_TYPE" in \
-        x"amd64"|x"x86_64") \
-            if [ X"$$CLANG" = X"YES" ] ; then \
-               $(CC) $(CFLAGS) \
-                     $(CFLAGS_CLANG) $(CFLAGS_CLANG_x86_64) -c $< ; \
-            else \
-               $(CC) $(CFLAGS) $(CFLAGS_x86_64) -c $< ; \
-            fi ;; \
-        *)  $(CC) $(CFLAGS) -c $< ;; \
-    esac
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -c $<
 
 all: $(PGM)
 
 $(PGM): $(PGM_OBJS)
-	MACH_TYPE="`$(UNAME) -m`" && \
-    CLANG="NO" && \
-    if $(CC) -v 2>&1 | $(GREP) -i clang 2>&1 > /dev/null ; then \
-       CLANG="YES" ; \
-    fi && \
-    case x"$$MACH_TYPE" in \
-        x"amd64"|x"x86_64") \
-            if [ X"$$CLANG" = X"YES" ] ; then \
-               $(CC) $(CFLAGS) \
-                     $(CFLAGS_CLANG) $(CFLAGS_CLANG_x86_64) \
-                     -o $(PGM) $(PGM_OBJS) ; \
-            else \
-               $(CC) $(CFLAGS) $(CFLAGS_x86_64) -o $(PGM) $(PGM_OBJS) ; \
-            fi ;; \
-        *)  $(CC) $(CFLAGS) -o $(PGM) $(PGM_OBJS) ;; \
-    esac
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -o $(PGM) $(PGM_OBJS) $(LIBS) 
 
+distclean: clean
+	/bin/rm -f platform.mk
+    
 clean:
 	/bin/rm -f *.o *~ core .DS_Store $(PGM) $(PGM).1.txt *.tgz
 

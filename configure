@@ -1,0 +1,100 @@
+#!/bin/sh
+# configure script for random
+
+# bsd includes for linux
+
+INCLUDE_BSD=/usr/include/bsd
+
+# platform specific makefiles
+
+MK_LINUX="linux.mk"
+MK_LINUX_ARM="linux-arm.mk"
+MK_DARWIN_X86="darwin-x86.mk"
+MK_DARWIN_ARM="darwin-arm.mk"
+MK_PLATFORM="platform.mk"
+
+# exit if platform specific makefile already exists 
+
+if [ -r "$MK_PLATFORM" ] ; then
+    echo "ERROR: $MK_PLATFORM exists!" 1>&2 ;
+    exit 1 ;
+fi
+
+# validate that platform specific makefiles are available
+
+for MKFILE in "$MK_LINUX" \
+              "$MK_DARWIN_X86" \
+              "$MK_DARWIN_ARM" ; 
+do
+    if [ ! -r "$MKFILE" ] ; then 
+        echo "ERROR: $MKFILE not found!" 1>&2 ; 
+        exit 1 ;
+    fi
+done
+
+# check for ln
+
+LN=/bin/ln
+
+if [ ! -x "$LN" ] ; then
+    echo "ERROR: ln not found!" 1>&2 ; 
+    exit 1 ;
+fi
+
+# check for uname
+
+if [ -x /bin/uname ] ; then
+   UNAME="/bin/uname" ; 
+elif [ -x /usr/bin/uname ] ; then
+   UNAME="/usr/bin/uname" ; 
+fi
+
+if [ X"$UNAME" = "X" ] ; then 
+    echo "ERROR: uname not found!" 1>&2 ;
+    exit 1 ;
+fi
+
+# create the platform specific makefile
+
+OS="`$UNAME -s`"
+case "$OS" in
+    Linux) 
+        # check for libbsd
+        if [ ! -d "$INCLUDE_BSD" ] ; then
+            echo "ERROR: libbsd does not appear to be installed!" 1>&2 ;
+            exit 1 ;
+        fi
+        "$LN" -s "$MK_LINUX" "$MK_PLATFORM"
+        if [ $? -ne 0 ] ; then        
+            echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
+            exit 1 ;
+        else
+            echo "Created $MK_PLATFORM for $OS";
+        fi ;;
+    Darwin) 
+        MACH="`$UNAME -m`"
+        case "$MACH" in 
+            arm64)
+                "$LN" -s "$MK_DARWIN_ARM" "$MK_PLATFORM"
+                if [ $? -ne 0 ] ; then        
+                    echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
+                    exit 1 ;
+                else
+                    echo "Created $MK_PLATFORM for $OS ($MACH)";
+                fi ;;
+            *)
+                "$LN" -s "$MK_DARWIN_X86" "$MK_PLATFORM"
+                if [ $? -ne 0 ] ; then        
+                    echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
+                    exit 1 ;
+                else
+                    echo "Created $MK_PLATFORM for $OS $(MACH)";
+                fi ;;
+        esac ;;
+    *)
+        echo "ERROR: Unsupported OS: $OS!" 1>&2 ; 
+        exit 1 ;
+        ;;
+esac
+
+exit 0
