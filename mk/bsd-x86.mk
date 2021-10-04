@@ -27,6 +27,6 @@ CFLAGS = -O2 -W -Wall -Wextra -Wpedantic -Werror -Walloca \
          -Wtautological-constant-in-range-compare \
          -Wassign-enum -Wformat-type-confusion \
          -Widiomatic-parentheses -Wunreachable-code-aggressive
-EXTRA_CFLAGS = -fcf-protection=full -fsanitize=memory \
-               -fsanitize=cfi -fsanitize=safe-stack
+EXTRA_CFLAGS = -fcf-protection=full -fsanitize=safe-stack \
+               -flto 
 LIBS = 
