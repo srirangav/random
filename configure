@@ -7,11 +7,12 @@ INCLUDE_BSD=/usr/include/bsd
 
 # SW_VERS for MacOSX 
 
-SW_VERS = /usr/bin/sw_vers
+SW_VERS=/usr/bin/sw_vers
 
 # platform specific makefiles
 
 MK_LINUX="linux.mk"
+MK_FREEBSD="freebsd.mk"
 MK_DARWIN_X86="darwin-x86.mk"
 MK_DARWIN_ARM="darwin-arm.mk"
 MK_DARWIN_LEGACY="darwin-legacy.mk"
@@ -27,6 +28,7 @@ fi
 # validate that platform specific makefiles are available
 
 for MKFILE in "$MK_LINUX" \
+              "$MK_FREEBSD" \
               "$MK_DARWIN_X86" \
               "$MK_DARWIN_ARM" \
               "$MK_DARWIN_LEGACY" ; 
@@ -63,7 +65,7 @@ fi
 
 OS="`$UNAME -s`"
 case X"$OS" in
-    X"Linux"") 
+    X"Linux") 
         # check for libbsd
         if [ ! -d "$INCLUDE_BSD" ] ; then
             echo "ERROR: libbsd does not appear to be installed!" 1>&2 ;
@@ -76,10 +78,10 @@ case X"$OS" in
         else
             echo "Created $MK_PLATFORM for $OS";
         fi ;;
-    X"Darwin"") 
+    X"Darwin") 
         MACH="`$UNAME -m`"
         case X"$MACH" in 
-            X"arm64"")
+            X"arm64")
                 "$LN" -s "$MK_DARWIN_ARM" "$MK_PLATFORM"
                 if [ $? -ne 0 ] ; then        
                     echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
@@ -112,6 +114,14 @@ case X"$OS" in
                         fi ;;
                 esac ;;
         esac ;;
+    X"FreeBSD")
+	"$LN" -s "$MK_FREEBSD" "$MK_PLATFORM"
+        if [ $? -ne 0 ] ; then
+            echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ;
+            exit 1 ;
+        else
+            echo "Created $MK_PLATFORM for $OS";
+        fi ;;
     *)
         echo "ERROR: $OS unsupported!" 1>&2 ; 
         exit 1 ;
@@ -119,3 +129,4 @@ case X"$OS" in
 esac
 
 exit 0
+
