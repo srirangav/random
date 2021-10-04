@@ -11,11 +11,11 @@ SW_VERS=/usr/bin/sw_vers
 
 # platform specific makefiles
 
-MK_LINUX="linux.mk"
-MK_FREEBSD="freebsd.mk"
-MK_DARWIN_X86="darwin-x86.mk"
-MK_DARWIN_ARM="darwin-arm.mk"
-MK_DARWIN_LEGACY="darwin-legacy.mk"
+MK_LINUX="mk/linux.mk"
+MK_FREEBSD="mk/freebsd.mk"
+MK_DARWIN_X86="mk/darwin-x86.mk"
+MK_DARWIN_ARM="mk/darwin-arm.mk"
+MK_DARWIN_LEGACY="mk/darwin-legacy.mk"
 MK_PLATFORM="platform.mk"
 
 # exit if platform specific makefile already exists 
