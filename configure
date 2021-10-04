@@ -12,8 +12,7 @@ SW_VERS=/usr/bin/sw_vers
 # platform specific makefiles
 
 MK_LINUX="mk/linux.mk"
-MK_FREEBSD="mk/freebsd.mk"
-MK_DARWIN_X86="mk/darwin-x86.mk"
+MK_BSD_X86="mk/bsd-x86.mk"
 MK_DARWIN_ARM="mk/darwin-arm.mk"
 MK_DARWIN_LEGACY="mk/darwin-legacy.mk"
 MK_PLATFORM="platform.mk"
@@ -28,8 +27,7 @@ fi
 # validate that platform specific makefiles are available
 
 for MKFILE in "$MK_LINUX" \
-              "$MK_FREEBSD" \
-              "$MK_DARWIN_X86" \
+              "$MK_BSD_X86" \
               "$MK_DARWIN_ARM" \
               "$MK_DARWIN_LEGACY" ; 
 do
@@ -105,7 +103,7 @@ case X"$OS" in
                             echo "Created $MK_PLATFORM for $OS $(MACH)";
                         fi ;;
                     *)
-                        "$LN" -s "$MK_DARWIN_X86" "$MK_PLATFORM"
+                        "$LN" -s "$MK_BSD_X86" "$MK_PLATFORM"
                         if [ $? -ne 0 ] ; then        
                             echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
                             exit 1 ;
@@ -115,7 +113,7 @@ case X"$OS" in
                 esac ;;
         esac ;;
     X"FreeBSD"|X"OpenBSD")
-	"$LN" -s "$MK_FREEBSD" "$MK_PLATFORM"
+        "$LN" -s "$MK_BSD_X86" "$MK_PLATFORM"
         if [ $? -ne 0 ] ; then
             echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ;
             exit 1 ;

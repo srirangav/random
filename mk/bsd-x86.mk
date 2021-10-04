@@ -1,4 +1,5 @@
-# darwin.mk - variables to build on MacOSX/Darwin arm
+# bsd-x86_64.mk - rules and variables to build on MacOSX/Darwin x86_64 
+# (10.7+), FreeBSD, and OpenBSD
 
 # based on:
 # https://developers.redhat.com/blog/2018/03/21/compiler-and-linker-flags-gcc/
@@ -26,5 +27,6 @@ CFLAGS = -O2 -W -Wall -Wextra -Wpedantic -Werror -Walloca \
          -Wtautological-constant-in-range-compare \
          -Wassign-enum -Wformat-type-confusion \
          -Widiomatic-parentheses -Wunreachable-code-aggressive
-EXTRA_CFLAGS = 
+EXTRA_CFLAGS = -fcf-protection=full -fsanitize=memory \
+               -fsanitize=cfi -fsanitize=safe-stack
 LIBS = 
