@@ -12,7 +12,8 @@ SW_VERS=/usr/bin/sw_vers
 # platform specific makefiles
 
 MK_LINUX="mk/linux.mk"
-MK_BSD_X86="mk/bsd-x86.mk"
+MK_FREEBSD_X86="mk/freebsd-x86.mk"
+MK_OPENBSD_X86="mk/openbsd-x86.mk"
 MK_DARWIN_X86="mk/darwin-x86.mk"
 MK_DARWIN_ARM="mk/darwin-arm.mk"
 MK_DARWIN_LEGACY="mk/darwin-legacy.mk"
@@ -28,7 +29,8 @@ fi
 # validate that platform specific makefiles are available
 
 for MKFILE in "$MK_LINUX" \
-              "$MK_BSD_X86" \
+              "$MK_FREEBSD_X86" \
+              "$MK_OPENBSD_X86" \
               "$MK_DARWIN_X86" \
               "$MK_DARWIN_ARM" \
               "$MK_DARWIN_LEGACY" ; 
@@ -114,10 +116,20 @@ case X"$OS" in
                         fi ;;
                 esac ;;
         esac ;;
-    X"FreeBSD"|X"OpenBSD")
+    X"FreeBSD")
         # TODO: support non-x86 versions of FreeBSD & OpenBSD, for now,
         #       just use the x86 compiler settings for all architectures
-        "$LN" -s "$MK_BSD_X86" "$MK_PLATFORM"
+        "$LN" -s "$MK_FREEBSD_X86" "$MK_PLATFORM"
+        if [ $? -ne 0 ] ; then
+            echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ;
+            exit 1 ;
+        else
+            echo "Created $MK_PLATFORM for $OS";
+        fi ;;
+    X"OpenBSD")
+        # TODO: support non-x86 versions of FreeBSD & OpenBSD, for now,
+        #       just use the x86 compiler settings for all architectures
+        "$LN" -s "$MK_OPENBSD_X86" "$MK_PLATFORM"
         if [ $? -ne 0 ] ; then
             echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ;
             exit 1 ;
