@@ -33,7 +33,7 @@ Build:
 History:
 
     v0.2.6 - modularize Makefile for multiple platforms, add support
-             for FreeBSD
+             for FreeBSD, OpenBSD
     v0.2.5 - add install/uninstall rules to Makefile, add support for
              removing commas in supplied numbers
     v0.2.4 - use OpenSSH portable arc4random_uniform to support older
