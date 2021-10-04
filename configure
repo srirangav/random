@@ -5,12 +5,16 @@
 
 INCLUDE_BSD=/usr/include/bsd
 
+# SW_VERS for MacOSX 
+
+SW_VERS = /usr/bin/sw_vers
+
 # platform specific makefiles
 
 MK_LINUX="linux.mk"
-MK_LINUX_ARM="linux-arm.mk"
 MK_DARWIN_X86="darwin-x86.mk"
 MK_DARWIN_ARM="darwin-arm.mk"
+MK_DARWIN_LEGACY="darwin-legacy.mk"
 MK_PLATFORM="platform.mk"
 
 # exit if platform specific makefile already exists 
@@ -24,7 +28,8 @@ fi
 
 for MKFILE in "$MK_LINUX" \
               "$MK_DARWIN_X86" \
-              "$MK_DARWIN_ARM" ; 
+              "$MK_DARWIN_ARM" \
+              "$MK_DARWIN_LEGACY" ; 
 do
     if [ ! -r "$MKFILE" ] ; then 
         echo "ERROR: $MKFILE not found!" 1>&2 ; 
@@ -57,8 +62,8 @@ fi
 # create the platform specific makefile
 
 OS="`$UNAME -s`"
-case "$OS" in
-    Linux) 
+case X"$OS" in
+    X"Linux"") 
         # check for libbsd
         if [ ! -d "$INCLUDE_BSD" ] ; then
             echo "ERROR: libbsd does not appear to be installed!" 1>&2 ;
@@ -71,10 +76,10 @@ case "$OS" in
         else
             echo "Created $MK_PLATFORM for $OS";
         fi ;;
-    Darwin) 
+    X"Darwin"") 
         MACH="`$UNAME -m`"
-        case "$MACH" in 
-            arm64)
+        case X"$MACH" in 
+            X"arm64"")
                 "$LN" -s "$MK_DARWIN_ARM" "$MK_PLATFORM"
                 if [ $? -ne 0 ] ; then        
                     echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
@@ -83,16 +88,32 @@ case "$OS" in
                     echo "Created $MK_PLATFORM for $OS ($MACH)";
                 fi ;;
             *)
-                "$LN" -s "$MK_DARWIN_X86" "$MK_PLATFORM"
-                if [ $? -ne 0 ] ; then        
-                    echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
+                if [ ! -x "$SW_VERS" ] ; then 
+                    echo "ERROR: $SW_VERS not available!" 1>&2 ; 
                     exit 1 ;
-                else
-                    echo "Created $MK_PLATFORM for $OS $(MACH)";
-                fi ;;
+                fi
+                OSXVERS="`$SW_VERS -productVersion`" ; 
+                case X"$OSXVERS" in
+                    X"10".[0-6].*)
+                        "$LN" -s "$MK_DARWIN_LEGACY" "$MK_PLATFORM"
+                        if [ $? -ne 0 ] ; then        
+                            echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
+                            exit 1 ;
+                        else
+                            echo "Created $MK_PLATFORM for $OS $(MACH)";
+                        fi ;;
+                    *)
+                        "$LN" -s "$MK_DARWIN_X86" "$MK_PLATFORM"
+                        if [ $? -ne 0 ] ; then        
+                            echo "ERROR: cannot create $MK_PLATFORM!" 1>&2 ; 
+                            exit 1 ;
+                        else
+                            echo "Created $MK_PLATFORM for $OS $(MACH)";
+                        fi ;;
+                esac ;;
         esac ;;
     *)
-        echo "ERROR: Unsupported OS: $OS!" 1>&2 ; 
+        echo "ERROR: $OS unsupported!" 1>&2 ; 
         exit 1 ;
         ;;
 esac
