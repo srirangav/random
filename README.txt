@@ -44,6 +44,11 @@ History:
     v0.2.1 - update gcc flags
     v0.2.0 - initial GitHub release
 
+Platforms:
+
+    random has been tested on Debian 10.x (arm) and 11.x (arm),
+    OpenBSD 6.9 (x86_64), FreeBSD 13 (x86_64), and MacOS 10.6+
+
 License:
 
     See LICENSE.txt
