@@ -25,6 +25,11 @@ Usage:
     are valid positive integers below ULONG_MAX, random prints out a 
     random integer between the first two arguments.
 
+Build:
+
+   $ ./configure
+   $ make 
+
 History:
 
     v0.2.6 - modularize Makefile for multiple platforms, add support
