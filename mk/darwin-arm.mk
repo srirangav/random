@@ -5,12 +5,13 @@
 # https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html
 # https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 # https://airbus-seclab.github.io/c-compiler-security/clang_compilation.html
+# https://rsalsamendi.github.io/salsablog/
 
 CFLAGS = -O2 -W -Wall -Wextra -Wpedantic -Werror -Walloca \
          -Wconversion -Wformat=2 -Wformat-security \
          -Wnull-dereference -Wstack-protector -Wstrict-overflow=3 \
          -Wvla -Wimplicit-fallthrough -Wswitch-enum \
-         -Wbad-function-cast -Wfloat-equal \
+         -Wbad-function-cast -Wfloat-equal -Wvla \
          -Wpointer-arith -Wmissing-declarations -Wshadow \
          -Wmissing-prototypes -Wcast-align -Wunused -Wpointer-arith \
          -Wno-missing-braces -Wformat-nonliteral -Wformat-y2k \
