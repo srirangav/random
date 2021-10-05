@@ -5,12 +5,10 @@ random v0.2.6
 By Sriranga Veeraraghavan <ranga@calalum.org>
 
 random is a simple command line program for generating random integer.
-random relies on arc4random(3), if available, or random(3).
+random relies on arc4random(3).
 
 Usage:
 
-    random
-    random [num]
     random [num1] [num2]
 
     When run without any arguments, random prints out a random integer 
@@ -27,38 +25,45 @@ Usage:
 
 Build:
 
-   $ ./configure
-   $ make 
+    $ ./configure
+    $ make 
 
 Install:
 
-   $ ./configure
-   $ make
-   $ make install
+    $ ./configure
+    $ make
+    $ make install
 
-   By default, random is installed in /usr/local.  To install in a
-   different location the installation PREFIX can be supplied as to
-   make as follows:
+    By default, random is installed in /usr/local.  To install in a
+    different location the installation PREFIX can be supplied as to
+    make as follows:
 
-   $ make install PREFIX="<prefix>"
+    $ make install PREFIX="<prefix>"
 
-   For example, the following will install random in /opt/local:
+    For example, the following will install random in /opt/local:
 
-   $ make PREFIX=/opt/local install
+    $ make PREFIX=/opt/local install
 
-   A DESTDIR can also be specified for staging purposes (with or
-   without an alternate prefix):
+    A DESTDIR can also be specified for staging purposes (with or
+    without an alternate prefix):
 
-   $ make DESTDIR="<destdir>" [PREFIX="<prefix>"] install
+    $ make DESTDIR="<destdir>" [PREFIX="<prefix>"] install
 
 Dependencies:
 
-   On Linux, libbsd is required. On Debian based systems, libbsd
-   may be installed as follows:
+    On Linux, libbsd is required because arc4random is not 
+    available on Linux by default - configure will check for 
+    libbsd, but will not install it.
 
-   $ sudo apt-get install libbsd-dev
+    On Debian-based systems, libbsd may be installed as follows:
 
-   configure will check for libbsd, but will not install it.
+    $ sudo apt-get install libbsd-dev
+
+    On Fedora-based systems, libbsd may be installed as follows:
+
+    $ sudo dnf install libbsd-devel
+
+    See: https://stackoverflow.com/questions/19671152/
 
 History:
 
