@@ -35,7 +35,7 @@ Install:
     $ make install
 
     By default, random is installed in /usr/local.  To install in a
-    different location the installation PREFIX can be supplied as to
+    different location the installation PREFIX can be supplied to
     make as follows:
 
     $ make install PREFIX="<prefix>"
