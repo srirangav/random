@@ -30,6 +30,36 @@ Build:
    $ ./configure
    $ make 
 
+Install:
+
+   $ ./configure
+   $ make
+   $ make install
+
+   By default, random is installed in /usr/local.  To install in a
+   different location the installation PREFIX can be supplied as to
+   make as follows:
+
+   $ make install PREFIX="<prefix>"
+
+   For example, the following will install random in /opt/local:
+
+   $ make PREFIX=/opt/local install
+
+   A DESTDIR can also be specified for staging purposes (with or
+   without an alternate prefix):
+
+   $ make DESTDIR="<destdir>" [PREFIX="<prefix>"] install
+
+Dependencies:
+
+   On Linux, libbsd is required. On Debian based systems, libbsd
+   may be installed as follows:
+
+   $ sudo apt-get install libbsd-dev
+
+   configure will check for libbsd, but will not install it.
+
 History:
 
     v0.2.6 - modularize Makefile for multiple platforms, add support
