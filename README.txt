@@ -1,7 +1,7 @@
 README
 ------
 
-random v0.2.6
+random v0.2.7
 By Sriranga Veeraraghavan <ranga@calalum.org>
 
 random is a simple command line program for generating random integer.
@@ -67,6 +67,7 @@ Dependencies:
 
 History:
 
+    v0.2.7 - switch to autoconf
     v0.2.6 - modularize Makefile for multiple platforms, add support
              for FreeBSD, OpenBSD
     v0.2.5 - add install/uninstall rules to Makefile, add support for

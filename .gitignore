@@ -20,3 +20,8 @@ DerivedData
 .idea/
 *.o
 random
+*.orig
+autom4te.cache
+*~
+*.log
+*.status
