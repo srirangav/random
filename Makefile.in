@@ -21,7 +21,7 @@ INSTALL=@INSTALL@
 all: $(PGM)
 
 $(PGM): $(PGM_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) 
+	$(CC) $(CFLAGS) -o $@ $(PGM_OBJS) $(LIBS)
 
 .PHONY: distclean
 distclean: clean
