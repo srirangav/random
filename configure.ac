@@ -158,15 +158,25 @@ TEST_AND_SET_CFLAG(-fpic)
 TEST_AND_SET_CFLAG(-fPIE)
 TEST_AND_SET_CFLAG(-fstack-protector-all) 
 TEST_AND_SET_CFLAG(-fstack-protector-strong)
-TEST_AND_SET_CFLAG(-fno-sanitize-recover)
-TEST_AND_SET_CFLAG(-fno-sanitize-recover=all)
 TEST_AND_SET_CFLAG(-fwrapv)
 TEST_AND_SET_CFLAG(-fcf-protection=full)
-TEST_AND_SET_CFLAG(-fsanitize=memory)
-TEST_AND_SET_CFLAG(-fsanitize=cfi)
-TEST_AND_SET_CFLAG(-fsanitize=safe-stack)
 TEST_AND_SET_CFLAG(-flto)
+
+# additional compiler flags based on OS
+
+HOST_UNAME=`uname`
+case "$HOST_UNAME" in
+	FreeBSD)
+		TEST_AND_SET_CFLAG(-fsanitize=safe-stack)
+		;;
+	*)
+		TEST_AND_SET_CFLAG(-fsanitize=memory)
+		TEST_AND_SET_CFLAG(-fsanitize=cfi)
+		TEST_AND_SET_CFLAG(-fno-sanitize-recover=all)
+		;;
+esac
 
 dnl Process Makefile.in to create Makefile
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+
