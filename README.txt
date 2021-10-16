@@ -38,16 +38,16 @@ Install:
     different location the installation PREFIX can be supplied to
     make as follows:
 
-    $ make install PREFIX="<prefix>"
+        $ make install PREFIX="<prefix>"
 
     For example, the following will install random in /opt/local:
 
-    $ make PREFIX=/opt/local install
+        $ make PREFIX=/opt/local install
 
     A DESTDIR can also be specified for staging purposes (with or
     without an alternate prefix):
 
-    $ make DESTDIR="<destdir>" [PREFIX="<prefix>"] install
+        $ make DESTDIR="<destdir>" [PREFIX="<prefix>"] install
 
 Dependencies:
 
@@ -57,11 +57,11 @@ Dependencies:
 
     On Debian-based systems, libbsd may be installed as follows:
 
-    $ sudo apt-get install libbsd-dev
+        $ sudo apt-get install libbsd-dev
 
     On Fedora-based systems, libbsd may be installed as follows:
 
-    $ sudo dnf install libbsd-devel
+        $ sudo dnf install libbsd-devel
 
     See: https://stackoverflow.com/questions/19671152/
 
@@ -82,8 +82,8 @@ History:
 
 Platforms:
 
-    random has been tested on Debian 10.x (arm) and 11.x (arm),
-    OpenBSD 6.9 (x86_64), FreeBSD 13 (x86_64), and MacOS 10.6+
+    random has been tested on Debian 10+ (arm), OpenBSD 6.9+ (x86_64), 
+    FreeBSD 13 (x86_64), and MacOSX 10.6+
 
 License:
 
