@@ -46,10 +46,6 @@ static const char *gRandomStrErrSame   = "Both integers are the same";
 
 /* uncomment this to remove commas from supplied numbers */
 
-/*
-#define REMOVE_COMMAS
-*/
-
 /* prototypes */
 
 static void printUsage(char *cmd);
