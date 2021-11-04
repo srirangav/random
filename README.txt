@@ -70,8 +70,6 @@ History:
     v0.2.7 - switch to autoconf
     v0.2.6 - modularize Makefile for multiple platforms, add support
              for FreeBSD, OpenBSD
-    v0.2.5 - add install/uninstall rules to Makefile, add support for
-             removing commas in supplied numbers
     v0.2.4 - use OpenSSH portable arc4random_uniform to support older
              MacOSX versions (10.6 and earlier); add support for Linux
              (Debian 10, Ubuntu 20.10)
@@ -83,7 +81,7 @@ History:
 Platforms:
 
     random has been tested on Debian 10+ (arm), OpenBSD 6.9+ (x86_64), 
-    FreeBSD 13 (x86_64), and MacOSX 10.6+
+    FreeBSD 13 (x86_64), and MacOSX 10.4+ (ppc, x86_64, M1)
 
 License:
 
