@@ -1,10 +1,11 @@
 # Makefile.in for random
 
+
 PREFIX = @prefix@
-PGM_SRCS = random.c
+PGM_SRCS = @PGM_SRCS@
 PGM_OBJS = $(PGM_SRCS:.c=.o)
-PGM = random
-PGM_REL = 0.2.7
+PGM = @PACKAGE_NAME@
+PGM_REL = @PACKAGE_VERSION@
 PGM_MAN = $(PGM).1
 PGM_BINDIR = $(DESTDIR)$(PREFIX)/bin
 PGM_MANDIR = $(DESTDIR)$(PREFIX)/man/man1

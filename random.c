@@ -1,8 +1,9 @@
 /*
-     random.c - a command line random number generator based on arc4random()
+     random.c - a command line random number generator based on
+                arc4random()
 
-     Portions Copyright (c) 2011-2017, 2020-2021 Sriranga Veeraraghavan
-     <ranga@calalum.org>. All rights reserved.
+     Portions Copyright (c) 2011-2017, 2020-2021, 2023 Sriranga
+     Veeraraghavan <ranga@calalum.org>. All rights reserved.
 
      Permission is hereby granted, free of charge, to any person
      obtaining a copy of this software and associated documentation
@@ -27,11 +28,12 @@
 
 /* includes */
 
-#ifdef __linux__
+#if defined(__linux__) && defined(NEED_UNIFORM_ARC4RANDOM)
 #include <bsd/stdlib.h>
 #else
 #include <stdlib.h>
-#endif /* __linux__ */
+#endif /* __linux__ && NEED_UNIFORM_ARC4RANDOM */
+
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -43,8 +45,6 @@
 
 static const char *gRandomStrErrNotPos = "Not a valid positive integer";
 static const char *gRandomStrErrSame   = "Both integers are the same";
-
-/* uncomment this to remove commas from supplied numbers */
 
 /* prototypes */
 
@@ -71,7 +71,8 @@ getLong (char *str, unsigned long *num)
 {
     char *ep;
 
-    if (str == NULL || num == NULL) {
+    if (str == NULL || num == NULL)
+    {
         return 0;
     }
 
@@ -79,7 +80,8 @@ getLong (char *str, unsigned long *num)
 
     if ((errno == EINVAL && *num == 0) ||
         !(str[0] != '\0' && *ep == '\0') ||
-        errno == ERANGE) {
+        errno == ERANGE)
+    {
         return 0;
     }
 
@@ -134,12 +136,11 @@ main (int argc, char **argv)
 {
     unsigned long val = 0, min = 0, max = ULONG_MAX;
 
-    if (argc == 2) {
-
+    if (argc == 2)
+    {
         /* only one argument */
 
-        if (argv[1] == NULL ||
-            argv[1][0] == '-' ||
+        if (argv[1] == NULL || argv[1][0] == '-' ||
             !getLong(argv[1], &val))
         {
             fprintf(stderr,
@@ -153,18 +154,22 @@ main (int argc, char **argv)
         /* if the number is less than or equal to 0, treat it
            as the min value, otherwise treat it as the max value */
 
-        if (val <= 0) {
+        if (val <= 0)
+        {
             min = val;
-        } else {
+        }
+        else
+        {
             max = val;
         }
 
-    } else if (argc >= 3) {
+    }
+    else if (argc >= 3)
+    {
 
         /* at least two arguments - treat it as a range */
 
-        if (argv[1] == NULL ||
-            argv[1][0] == '-' ||
+        if (argv[1] == NULL || argv[1][0] == '-' ||
             !getLong(argv[1], &min))
         {
             fprintf(stderr,
@@ -175,8 +180,7 @@ main (int argc, char **argv)
             exit(1);
         }
 
-        if (argv[2] == NULL ||
-            argv[2][0] == '-' ||
+        if (argv[2] == NULL || argv[2][0] == '-' ||
             !getLong(argv[2], &max))
         {
             fprintf(stderr,
@@ -200,7 +204,8 @@ main (int argc, char **argv)
 
     /* swap min & max if min is greater than max */
 
-    if (min > max) {
+    if (min > max)
+    {
         val = min;
         min = max;
         max = val;
@@ -208,7 +213,8 @@ main (int argc, char **argv)
 
     /* keep max under ULONG_MAX */
 
-    if (max == ULONG_MAX) {
+    if (max == ULONG_MAX)
+    {
         max--;
     }
 
@@ -222,3 +228,4 @@ main (int argc, char **argv)
 
     exit(0);
 }
+

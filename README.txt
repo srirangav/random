@@ -1,7 +1,7 @@
 README
 ------
 
-random v0.2.7
+random v0.2.8
 By Sriranga Veeraraghavan <ranga@calalum.org>
 
 random is a simple command line program for generating random integer.
@@ -11,22 +11,22 @@ Usage:
 
     random [num1] [num2]
 
-    When run without any arguments, random prints out a random integer 
+    When run without any arguments, random prints out a random integer
     between 0 and ULONG_MAX.
 
-    When a single argument is provided, if that argument is a valid 
-    positive integer below ULONG_MAX, random prints out a random integer 
-    between 0 and the specified integer.  If the argument is 0, random 
+    When a single argument is provided, if that argument is a valid
+    positive integer below ULONG_MAX, random prints out a random integer
+    between 0 and the specified integer.  If the argument is 0, random
     prints out a random integer between 0 and ULONG_MAX.
 
-    If two or more arguments are provided, and the first two arguments 
-    are valid positive integers below ULONG_MAX, random prints out a 
+    If two or more arguments are provided, and the first two arguments
+    are valid positive integers below ULONG_MAX, random prints out a
     random integer between the first two arguments.
 
 Build:
 
     $ ./configure
-    $ make 
+    $ make
 
 Install:
 
@@ -51,15 +51,18 @@ Install:
 
 Dependencies:
 
-    On Linux, libbsd is required because arc4random is not 
-    available on Linux by default - configure will check for 
-    libbsd, but will not install it.
+    On some versions of Linux (for example, Debian prior to bookworm),
+    libbsd is required because arc4random is not generally available on
+    Linux by default - configure will check for libbsd, but will not
+    install it.
 
-    On Debian-based systems, libbsd may be installed as follows:
+    On Debian-based systems, if libbsd is needed, it may be installed as
+    follows:
 
         $ sudo apt-get install libbsd-dev
 
-    On Fedora-based systems, libbsd may be installed as follows:
+    On Fedora-based systems, if libbsd is needed, libbsd may be
+    installed as follows:
 
         $ sudo dnf install libbsd-devel
 
@@ -67,6 +70,8 @@ Dependencies:
 
 History:
 
+    v0.2.8 - updates based on Debian bookwork (12.x), which no longer
+             requires libbsd
     v0.2.7 - switch to autoconf
     v0.2.6 - modularize Makefile for multiple platforms, add support
              for FreeBSD, OpenBSD
@@ -81,7 +86,7 @@ History:
 Platforms:
 
     random has been tested on Debian 10+ (arm), OpenBSD 6.9+ (x86_64,
-    arm64), FreeBSD 13 (x86_64, arm64), and MacOSX 10.4+ (ppc, x86_64, 
+    arm64), FreeBSD 13 (x86_64, arm64), and MacOSX 10.4+ (ppc, x86_64,
     M1).
 
 License:

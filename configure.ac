@@ -1,9 +1,9 @@
 dnl -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([random],[0.2.7],[ranga@calalum.org])
+AC_INIT([random],[0.2.8],[ranga@calalum.org])
 
-# We want to turn on warnings if we are using gcc and the user did 
+# We want to turn on warnings if we are using gcc and the user did
 # not specify CFLAGS. The autoconf check for the C compiler sets the
 # CFLAGS if gcc is used, so we will save it before we run that check.
 
@@ -16,7 +16,10 @@ AC_PROG_INSTALL
 
 CFLAGS="$save_CFLAGS $CFLAGS"
 
-AC_CONFIG_SRCDIR([random.c])
+# check for source files
+
+PGM_SRCS="random.c"
+AC_CONFIG_SRCDIR([$PGM_SRCS])
 
 # Check basic types.
 
@@ -178,5 +181,6 @@ esac
 
 dnl Process Makefile.in to create Makefile
 AC_CONFIG_FILES([Makefile])
+AC_SUBST([PGM_SRCS])
 AC_OUTPUT
 
