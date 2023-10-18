@@ -48,8 +48,8 @@ static const char *gRandomStrErrSame   = "Both integers are the same";
 
 /* prototypes */
 
-static void printUsage(char *cmd);
-static int getLong(char *str, unsigned long *num);
+static void printUsage(const char *cmd);
+static int getLong(const char *str, unsigned long *num);
 #ifdef NEED_UNIFORM_ARC4RANDOM
 static u_int32_t uniform_arc4random(u_int32_t upper_bound);
 #endif /* NEED_UNIFORM_ARC4RANDOM */
@@ -59,7 +59,7 @@ static u_int32_t uniform_arc4random(u_int32_t upper_bound);
 /* print_usage - prints the usage message */
 
 static void
-printUsage (char *cmd)
+printUsage (const char *cmd)
 {
     fprintf(stderr, "Usage: %s [num1] [num2]\n", cmd);
 }
@@ -67,7 +67,7 @@ printUsage (char *cmd)
 /* getLong - get a long from the specified string */
 
 static int
-getLong (char *str, unsigned long *num)
+getLong (const char *str, unsigned long *num)
 {
     char *ep;
 
